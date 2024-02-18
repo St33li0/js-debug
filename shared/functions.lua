@@ -23,7 +23,7 @@ Config.DebugTypes = {
     { Name = 'Fatal Error', String = 'FATAL', int = 66}
 }
 
----@param args{level:number,msg:string,value?:any,time?:string|osdate}
+---@param args{level:number,msg:string,value?:any,time?:any}
 function SetMsg(args)
     Msg = nil
     local lvl
@@ -69,7 +69,7 @@ function FormatTime(args)
     return formatted
 end
 
----@param args{dest:number,player?:number,level:number,msg:string,value?:any}
+---@param args{dest:number,level:number,msg:string,value?:any}
 ---@diagnostic disable-next-line
 ---@param dest number
 ---|"0" # -- Chat
@@ -83,7 +83,7 @@ end
 ---|"2" # --NOTIFY ------ Notification ---- Notification of task completing or similar
 ---|"3" # ---WARN --------- Warning ------- Warning message. E.g. No Access etc.
 ---|"4" # ---ISSUE ---- Low Level Issue --- Low level issue i.e. a non-core function failure
----|"5" # --ERROR --------- Error --------- Script Errored. Logged to file by server
+---|"5" # --ERROR ---------- Error -------- Script Errored. Logged to file by server
 ---|"6" # -CRITICAL --- Critical Error ---- Error that may have broken some functionality
 ---|"66" # ---FATAL ----- Fatal Error ----- Encountered error that won't recover
 function TriggerDebug(args)
