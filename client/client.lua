@@ -1,6 +1,6 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 
--- js-debug debugger
+--js-debug debugger
 -- RegisterCommand('getDebug', function(source,args)
 --     local where = args[1] + 0
 --     local level = args[2] + 0

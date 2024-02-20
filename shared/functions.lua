@@ -69,7 +69,7 @@ function FormatTime(args)
     return formatted
 end
 
----@param args{dest:number,level:number,msg:string,value?:any}
+---@param args{dest:number,level:number,msg:string,value?:any,ply?:number}
 ---@diagnostic disable-next-line
 ---@param dest number
 ---|"0" # -- Chat
@@ -88,21 +88,17 @@ end
 ---|"66" # ---FATAL ----- Fatal Error ----- Encountered error that won't recover
 function TriggerDebug(args)
     if args then
-        local temp = { level = args.level, msg = args.msg }
-        if type(args.value) ~= 'nil' then
-            temp.value = args.value
-            if args.dest < 0 or args.dest > 3 then TriggerEvent('js-debug-getDebug-chat', {level = 0, msg = "Destination value out of range", value = args.dest})
-            elseif args.dest == 0 then TriggerEvent('js-debug-getDebug-chat', temp)
-            elseif args.dest == 1 then TriggerEvent('js-debug-getDebug-console', temp)
-            elseif args.dest == 2 then TriggerServerEvent('js-debug-getDebug-server', temp)
+        local temp = {level = args.level, msg = args.msg}
+        if type(args.value) ~= 'nil' then temp.value = args.value end
+        if type(args.ply) ~= 'nil' then
+            if args.dest == 0 then TriggerClientEvent('js-debug-getDebug-chat', args.ply, temp) 
+            elseif args.dest == 1 then TriggerClientEvent('js-debug-getDebug-console', args.ply, temp)
+            elseif args.dest == 2 then TriggerEvent('js-debug-getDebug-server', temp)
             elseif args.dest == 3 then
-                TriggerEvent('js-debug-getDebug-console', temp)
-                TriggerServerEvent('js-debug-getDebug-server', temp)
+                TriggerClientEvent('js-debug-getDebug-console', args.ply, temp)
+                TriggerEvent('js-debug-getDebug-server', temp)
             end
-            if args.dest < 0 or args.dest > 3 then TriggerEvent('js-debug-getDebug-chat', {level = 0, msg = "Destination value out of range", value = args.dest})
-            elseif args.dest == 0 then 
-            end
-        elseif type(args.value) == 'nil' then
+        else
             if args.dest == 0 then TriggerEvent('js-debug-getDebug-chat', temp)
             elseif args.dest == 1 then TriggerEvent('js-debug-getDebug-console', temp)
             elseif args.dest == 2 then TriggerServerEvent('js-debug-getDebug-server', temp)
@@ -110,7 +106,22 @@ function TriggerDebug(args)
                 TriggerEvent('js-debug-getDebug-console', temp)
                 TriggerServerEvent('js-debug-getDebug-server', temp)
             end
-        end 
-    else TriggerEvent('js-debug-getDebug-console',{level = 0, msg = "Args found as nil", value = nil}) end
+        end
+    else TriggerEvent('js-debug-getDebug-server',{level = 0, msg = "Args found as nil", value = 'nil'}) end
 end
--- exports('TriggerDebug', JSDebug.TriggerDebug)
+
+---@param internal? boolean # Required "true" if called from server
+---@param name string
+---@param start boolean 
+---|"true" # Start timer with given name
+---|"false" # Stop timer with given name
+function Timer(name, start, internal)
+    if internal then TriggerEvent('js-debug-timer',start,name)
+    else TriggerServerEvent('js-debug-timer',start,name) end
+end
+
+function GetDiff(t1,t2)
+    if t1 > t2 then local t = t2 t2 = t1 t1 = t end -- Swap t1 and t2, making t2 the larger number
+    local t3 = t2-t1
+    return t3..'s'
+end
